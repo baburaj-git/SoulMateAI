@@ -3,6 +3,7 @@ import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Heart, Users, Award, ArrowRight } from "lucide-react"
+import { MBTITest } from "@/components/MBTITest"
 
 export default function Home() {
   return (
@@ -80,6 +81,18 @@ export default function Home() {
               </CardContent>
             </Card>
           </div>
+        </div>
+      </section>
+
+      {/* MBTI Test Section */}
+      <section className="py-16">
+        <div className="container mx-auto px-4">
+          <h2 className="text-3xl font-bold text-center mb-12">Take Our Personality Assessment</h2>
+          <p className="text-center text-gray-600 mb-8 max-w-2xl mx-auto">
+            Our AI-powered matchmaking system uses the scientifically validated MBTI framework to understand your personality type
+            and find your most compatible matches.
+          </p>
+          <MBTITest />
         </div>
       </section>
 
