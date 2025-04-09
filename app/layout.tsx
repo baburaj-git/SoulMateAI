@@ -1,33 +1,27 @@
-import type React from "react"
-import type { Metadata } from "next"
+'use client';
+
 import { Inter } from "next/font/google"
 import "./globals.css"
+import { AuthProvider } from '@/lib/auth-context'
+import { Toaster } from "@/components/ui/toaster"
 import Navbar from "@/components/navbar"
-import { ThemeProvider } from "@/components/theme-provider"
+import { metadata } from "./metadata"
 
 const inter = Inter({ subsets: ["latin"] })
 
-export const metadata: Metadata = {
-  title: "SoulSync AI - Modern Indian Matrimonial Matchmaking",
-  description:
-    "Find your perfect life partner with our AI-powered matrimonial service designed for modern Indian families",
-    generator: 'v0.dev'
-}
-
 export default function RootLayout({
   children,
-}: {
-  children: React.ReactNode
-}) {
+}: Readonly<{
+  children: React.ReactNode;
+}>) {
   return (
     <html lang="en" suppressHydrationWarning>
+      <head>
+        <title>{metadata.title as string}</title>
+        <meta name="description" content={metadata.description as string} />
+      </head>
       <body className={inter.className} suppressHydrationWarning>
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="light"
-          enableSystem={false}
-          disableTransitionOnChange
-        >
+        <AuthProvider>
           <div className="min-h-screen flex flex-col">
             <Navbar />
             <main className="flex-1">{children}</main>
@@ -79,7 +73,8 @@ export default function RootLayout({
               </div>
             </footer>
           </div>
-        </ThemeProvider>
+          <Toaster />
+        </AuthProvider>
       </body>
     </html>
   )

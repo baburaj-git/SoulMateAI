@@ -3,14 +3,21 @@
 import { useState } from "react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
-import { Menu, X, Globe } from "lucide-react"
+import { Menu, X, Globe, User, Home } from "lucide-react"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
+import { useAuth } from "@/lib/auth-context"
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
+  const { user, userName, signOut } = useAuth()
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen)
+  }
+
+  const handleSignOut = async () => {
+    await signOut()
+    setIsMenuOpen(false)
   }
 
   return (
@@ -25,115 +32,142 @@ const Navbar = () => {
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-4">
-            <Link href="/" className="px-3 py-2 hover:text-primary-foreground/80">
-              Home
-            </Link>
-            <Link href="/process" className="px-3 py-2 hover:text-primary-foreground/80">
-              Our Process
-            </Link>
-            <Link href="/why-soulsync" className="px-3 py-2 hover:text-primary-foreground/80">
-              Why SoulSync
-            </Link>
-            <Link href="/contact" className="px-3 py-2 hover:text-primary-foreground/80">
-              Contact Us
-            </Link>
-
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon" className="ml-2">
-                  <Globe className="h-5 w-5" />
-                  <span className="sr-only">Language</span>
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuItem>English</DropdownMenuItem>
-                <DropdownMenuItem>हिन्दी (Hindi)</DropdownMenuItem>
-                <DropdownMenuItem>தமிழ் (Tamil)</DropdownMenuItem>
-                <DropdownMenuItem>తెలుగు (Telugu)</DropdownMenuItem>
-                <DropdownMenuItem>ಕನ್ನಡ (Kannada)</DropdownMenuItem>
-                <DropdownMenuItem>मराठी (Marathi)</DropdownMenuItem>
-                <DropdownMenuItem>ગુજરાતી (Gujarati)</DropdownMenuItem>
-                <DropdownMenuItem>বাংলা (Bengali)</DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-
-            <Link href="/auth">
-              <Button variant="secondary" className="ml-4">
-                Register / Login
+            <Link href="/">
+              <Button variant="ghost" className="flex items-center gap-2">
+                <Home className="h-5 w-5" />
+                Home
               </Button>
             </Link>
-          </div>
-
-          {/* Mobile Navigation Button */}
-          <div className="md:hidden flex items-center">
+            <Link href="/about">
+              <Button variant="ghost">About</Button>
+            </Link>
+            <Link href="/how-it-works">
+              <Button variant="ghost">How It Works</Button>
+            </Link>
+            <Link href="/pricing">
+              <Button variant="ghost">Pricing</Button>
+            </Link>
+            <Link href="/contact">
+              <Button variant="ghost">Contact</Button>
+            </Link>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon" className="mr-2">
+                <Button variant="ghost" size="icon">
                   <Globe className="h-5 w-5" />
-                  <span className="sr-only">Language</span>
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
                 <DropdownMenuItem>English</DropdownMenuItem>
-                <DropdownMenuItem>हिन्दी (Hindi)</DropdownMenuItem>
-                <DropdownMenuItem>தமிழ் (Tamil)</DropdownMenuItem>
-                <DropdownMenuItem>తెలుగు (Telugu)</DropdownMenuItem>
-                <DropdownMenuItem>ಕನ್ನಡ (Kannada)</DropdownMenuItem>
-                <DropdownMenuItem>मराठी (Marathi)</DropdownMenuItem>
-                <DropdownMenuItem>ગુજરાતી (Gujarati)</DropdownMenuItem>
-                <DropdownMenuItem>বাংলা (Bengali)</DropdownMenuItem>
+                <DropdownMenuItem>हिंदी</DropdownMenuItem>
+                <DropdownMenuItem>தமிழ்</DropdownMenuItem>
+                <DropdownMenuItem>తెలుగు</DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
 
-            <button
-              onClick={toggleMenu}
-              className="inline-flex items-center justify-center p-2 rounded-md hover:text-primary-foreground/80 focus:outline-none"
-            >
-              {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
-            </button>
+            {user ? (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" className="flex items-center gap-2">
+                    <User className="h-5 w-5" />
+                    <span>{userName || user.email || 'User'}</span>
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuItem asChild>
+                    <Link href="/profile">Profile</Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                    <Link href="/matches">Matches</Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                    <Link href="/settings">Settings</Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={handleSignOut}>
+                    Sign Out
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            ) : (
+              <Link href="/login">
+                <Button variant="ghost">Login/Register</Button>
+              </Link>
+            )}
+          </div>
+
+          {/* Mobile Navigation */}
+          <div className="md:hidden">
+            <Button variant="ghost" size="icon" onClick={toggleMenu}>
+              {isMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+            </Button>
           </div>
         </div>
 
-        {/* Mobile Navigation Menu */}
+        {/* Mobile Menu */}
         {isMenuOpen && (
-          <div className="md:hidden">
-            <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
-              <Link
-                href="/"
-                className="block px-3 py-2 hover:bg-primary-foreground/10 rounded-md"
-                onClick={() => setIsMenuOpen(false)}
-              >
+          <div className="md:hidden py-4 space-y-2">
+            <Link href="/">
+              <Button variant="ghost" className="w-full justify-start">
+                <Home className="h-5 w-5 mr-2" />
                 Home
+              </Button>
+            </Link>
+            <Link href="/about">
+              <Button variant="ghost" className="w-full justify-start">About</Button>
+            </Link>
+            <Link href="/how-it-works">
+              <Button variant="ghost" className="w-full justify-start">How It Works</Button>
+            </Link>
+            <Link href="/pricing">
+              <Button variant="ghost" className="w-full justify-start">Pricing</Button>
+            </Link>
+            <Link href="/contact">
+              <Button variant="ghost" className="w-full justify-start">Contact</Button>
+            </Link>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" className="w-full justify-start">
+                  <Globe className="h-5 w-5 mr-2" />
+                  Language
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-48">
+                <DropdownMenuItem>English</DropdownMenuItem>
+                <DropdownMenuItem>हिंदी</DropdownMenuItem>
+                <DropdownMenuItem>தமிழ்</DropdownMenuItem>
+                <DropdownMenuItem>తెలుగు</DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+
+            {user ? (
+              <>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="ghost" className="w-full justify-start">
+                      <User className="h-5 w-5 mr-2" />
+                      {userName || user.email || 'User'}
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className="w-48">
+                    <DropdownMenuItem asChild>
+                      <Link href="/profile">Profile</Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
+                      <Link href="/matches">Matches</Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
+                      <Link href="/settings">Settings</Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={handleSignOut}>
+                      Sign Out
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </>
+            ) : (
+              <Link href="/login">
+                <Button variant="ghost" className="w-full justify-start">Login/Register</Button>
               </Link>
-              <Link
-                href="/process"
-                className="block px-3 py-2 hover:bg-primary-foreground/10 rounded-md"
-                onClick={() => setIsMenuOpen(false)}
-              >
-                Our Process
-              </Link>
-              <Link
-                href="/why-soulsync"
-                className="block px-3 py-2 hover:bg-primary-foreground/10 rounded-md"
-                onClick={() => setIsMenuOpen(false)}
-              >
-                Why SoulSync
-              </Link>
-              <Link
-                href="/contact"
-                className="block px-3 py-2 hover:bg-primary-foreground/10 rounded-md"
-                onClick={() => setIsMenuOpen(false)}
-              >
-                Contact Us
-              </Link>
-              <Link
-                href="/auth"
-                className="block px-3 py-2 hover:bg-primary-foreground/10 rounded-md"
-                onClick={() => setIsMenuOpen(false)}
-              >
-                Register / Login
-              </Link>
-            </div>
+            )}
           </div>
         )}
       </div>
